@@ -1,151 +1,771 @@
+/* =====================================================================
+   SITE STYLES — colours, fonts and layout.
+   The values at the top (:root) control the whole look.
+   ===================================================================== */
+
+:root {
+  --bg: #0a0a0a;
+  --fg: #f2f2f2;
+  --dim: rgba(242, 242, 242, 0.55);
+  --tile: #141414; /* grey boxes where a file is still missing */
+  --pad: clamp(16px, 3vw, 40px); /* space around the edges of the screen */
+  --font: 'Hanken Grotesk', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Light pages (Art Direction, About): white background, black text.
+   Which page is light or dark is set in App.jsx. */
+:root[data-theme='light'] {
+  --bg: #ffffff;
+  --fg: #0a0a0a;
+  --dim: rgba(10, 10, 10, 0.55);
+  --tile: #f0f0f0;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html,
 body {
-  background-color: #ffffff;
-  color: #000000;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  font-weight: 300;
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
 }
 
-.main-container {
-  min-height: 100vh;
-  padding: 60px;
-  display: flex;
-  flex-direction: column;
+a {
+  color: inherit;
+  text-decoration: none;
 }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+}
+
+/* Focus outline: hidden when clicking with the mouse, but shown (as a thin
+   white line) when moving around with the keyboard's Tab key. */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 1px solid var(--fg);
+  outline-offset: 4px;
+}
+
+/* Removes the grey flash when tapping links on phones */
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dim {
+  color: var(--dim);
+}
+
+/* ---------------------------------------------------------------------
+   TOP BAR — name top-left, navigation top-right
+   --------------------------------------------------------------------- */
 
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 40px;
-}
-
-.brand h1 {
-  font-size: 14px;
-  font-weight: 800;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  padding: calc(var(--pad) + env(safe-area-inset-top, 0px)) var(--pad) var(--pad);
+  font-size: 12px;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
-.contact-link {
-  font-size: 13px;
-  text-decoration: none;
-  color: #000;
-  margin-top: 10px;
-  display: block;
+/* City clocks: a thin row along the very top edge, above the name and nav.
+   Pulled up to 12px from the top of the screen (the header's own top
+   padding is --pad), with --pad of space below it before the name row. */
+.clocks {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: space-between; /* first city lines up with the name, last with the nav */
+  gap: 16px;
+  margin: calc(12px - var(--pad)) 0 calc(var(--pad) - 10px);
+  font-size: 10px;
+  line-height: 14px;
+  letter-spacing: 0.25em;
+}
+
+.clocks__city {
+  display: flex;
+  gap: 0.8em;
+  white-space: nowrap;
+}
+
+.clocks__time {
+  color: var(--dim);
+  font-variant-numeric: tabular-nums; /* digits all the same width, so nothing wiggles */
+}
+
+/* full names on computers, short codes (LA, NY…) on phones */
+.clocks__short {
+  display: none;
+}
+
+.header--solid {
+  background: var(--bg);
+}
+
+.header__name {
+  font-weight: 400;
+}
+
+/* Grey line under the name (only on some pages, e.g. Art Direction).
+   It takes a full row of its own, so the nav stays next to the name. */
+.header__subtitle {
+  order: 3;
+  flex-basis: 100%;
+  font-weight: 400;
+  color: var(--dim);
+  margin-top: -4px;
 }
 
 .nav {
   display: flex;
-  gap: 30px;
+  gap: 2.5em;
 }
 
-.nav-item {
-  font-size: 12px;
-  text-transform: uppercase;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  letter-spacing: 0.05em;
+.nav a {
+  color: var(--dim);
+  transition: color 0.2s;
 }
 
-.nav-item.active {
-  font-weight: 900;
-  border-bottom: 1.5px solid black;
+.nav a:hover,
+.nav a.is-active {
+  color: var(--fg);
 }
 
-.content-area {
-  flex-grow: 1;
-  width: 100%;
+/* ---------------------------------------------------------------------
+   SIMPLE PAGES (About, Art Direction) — content centered on screen
+   --------------------------------------------------------------------- */
+
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 120px var(--pad);
+}
+
+.page--center {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.project-display {
-  width: 100%;
-  max-width: 1100px;
-}
-
-.project-header-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  font-size: 11px;
+  justify-content: center;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  opacity: 0.7;
 }
 
-.main-image-wrap {
-  width: 100%;
-  aspect-ratio: 16 / 9;
+/* The bio: a big, bold statement (like the old site). Grows with the
+   window: 20px on small screens up to 34px on big ones. */
+.bio {
+  max-width: 30em;
+  font-size: clamp(20px, 2.4vw, 34px);
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+
+.bio p + p {
+  margin-top: 0.6em;
+}
+
+/* the email address under the bio: lowercase, underlined, clickable */
+.about-email {
+  margin-top: clamp(32px, 4vw, 56px);
+  font-size: clamp(15px, 1.5vw, 20px);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.35em;
+  transition: color 0.2s;
+}
+
+.about-email:hover {
+  color: var(--dim);
+}
+
+.about-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 0;
+  margin-top: 48px;
+}
+
+/* the "—" between the links */
+.about-links li + li::before {
+  content: '—';
+  margin: 0 1.2em;
+  color: var(--dim);
+}
+
+.about-links a:hover {
+  color: var(--dim);
+}
+
+/* ---------------------------------------------------------------------
+   FILMS SLIDER
+   --------------------------------------------------------------------- */
+
+.films {
+  position: fixed;
+  inset: 0;
   overflow: hidden;
-  background-color: #f8f8f8;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
 }
 
-.main-image-wrap img {
+/* Background video / image, filling the whole screen */
+.slide-bg {
+  position: absolute;
+  inset: 0;
+  animation: fade-in 0.8s ease;
+}
+
+.slide-bg video,
+.slide-bg img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-/* RUUDUKKO PROJEKTIN SISÄLLÄ */
-.stills-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-  width: 100%;
+/* Darkens the top and bottom so the white text stays readable */
+.slide-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0) 25%,
+    rgba(0, 0, 0, 0) 55%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
 }
 
-.grid-img {
-  width: 100%;
-  height: 500px;
-  object-fit: cover;
+.slide-bg--empty {
+  background: radial-gradient(ellipse at center, #1c1c1c 0%, var(--bg) 70%);
 }
 
-.grid-img.wide {
-  grid-column: span 2;
-  height: auto;
-  aspect-ratio: 21 / 9;
-}
-
-.credits-text {
-  margin-top: 40px;
-  font-size: 11px;
-  text-transform: uppercase;
-  opacity: 0.5;
-  letter-spacing: 0.1em;
-}
-
-.footer {
+/* VIEW, at the bottom centre, just above the counter (e.g. 2 / 3).
+   bottom = the counter's position + its height (16px) + a small gap (12px)
+   − VIEW's own invisible click padding below the text (1.2em = 14.4px). */
+.slide-actions {
+  position: absolute;
+  bottom: calc(var(--pad) + env(safe-area-inset-bottom, 0px) + 16px + 12px - 14.4px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-top: 80px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
-.footer-left p {
+.play {
+  display: block;
+  /* invisible padding = bigger area to click; extra left space balances the letter spacing */
+  padding: 1.2em 2.2em 1.2em calc(2.2em + 0.4em);
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  transition: opacity 0.2s;
+}
+
+.play:hover {
   opacity: 0.6;
-  line-height: 1.6;
 }
 
-.footer-right {
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  padding: 16px;
+  color: var(--dim);
+  transition: color 0.2s;
+}
+
+.arrow:hover {
+  color: var(--fg);
+}
+
+.arrow--prev {
+  left: calc(var(--pad) - 16px);
+}
+
+.arrow--next {
+  right: calc(var(--pad) - 16px);
+}
+
+.slide-info {
+  position: absolute;
+  left: var(--pad);
+  bottom: calc(var(--pad) + env(safe-area-inset-bottom, 0px));
+  z-index: 2;
+  max-width: min(440px, calc(100% - 2 * var(--pad) - 80px));
+  animation: fade-in 0.8s ease;
+}
+
+.slide-info__type {
+  color: var(--dim);
+  font-size: 10px;
+  margin-bottom: 10px;
+}
+
+.slide-info__title {
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+}
+
+.slide-info__description {
+  line-height: 1.9;
+  letter-spacing: 0.12em;
+  margin-top: 18px;
+  text-transform: none;
+}
+
+.counter {
+  position: absolute;
+  line-height: 16px;
+  left: 50%;
+  bottom: calc(var(--pad) + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 2;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------
+   ART DIRECTION page + FILM pages
+   --------------------------------------------------------------------- */
+
+.art,
+.project {
+  /* starts right below the top bar (its height is measured in Header.jsx);
+     the top bar's own bottom padding gives the small gap */
+  padding-top: var(--header-height, 120px);
+  padding-left: var(--pad);
+  padding-right: var(--pad);
+}
+
+/* ---------------------------------------------------------------------
+   FILM pages (e.g. /films/ready-to-die): video + one row of thumbnails,
+   all on one screen (on phones the page scrolls instead)
+   --------------------------------------------------------------------- */
+
+.project {
+  padding-bottom: var(--pad);
+}
+
+/* CLOSE sits on its own row just below the top bar, on the right */
+.project__bar {
   display: flex;
-  gap: 30px;
+  justify-content: flex-end;
 }
 
-.footer-right a {
-  text-decoration: none;
-  color: #000;
-  font-weight: 600;
+.project__close {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.3em;
+  color: var(--fg);
+  transition: color 0.2s;
+}
+
+.project__close:hover {
+  color: var(--dim);
+}
+
+/* Video + thumbnails. Width: 67% of the window like the Art Direction
+   grid, but smaller when needed so everything fits in the window height.
+   --room = the height left over for the video and the thumbnail row:
+   window height − top bar − CLOSE row (16px) − gap above the heading (16px)
+   − heading row (16px + 10px gap) − gap above the thumbnails − bottom margin.
+   The video box is 2/3 as tall as it is wide (3:2), the thumbnail row
+   --thumbs-height (set in FilmProject.jsx), so the widest that fits is
+   --room ÷ (2/3 + --thumbs-height). */
+.film {
+  --gap: 6px;
+  --room: calc(100dvh - var(--header-height, 120px) - 16px - 16px - 26px - var(--gap) - var(--pad));
+  width: min(67vw, 100%, calc(var(--room) / (0.6667 + var(--thumbs-height, 0))));
+  margin: 16px auto 0;
+}
+
+/* "ARTIST — TITLE" above the video, lined up with its left edge.
+   Same size and spacing as the nav links (see .header), but black. */
+.film__heading {
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 16px;
+  letter-spacing: 0.3em;
+  color: var(--fg);
+  margin-bottom: 10px;
+}
+
+.film__video {
+  /* 3:2, the same shape as the cover and the stills, so nothing jumps
+     when hovering. A video of another shape fits inside (Vimeo adds bands). */
+  aspect-ratio: 3 / 2;
+  background: #000;
+  transition: background-color 0.25s;
+}
+
+/* A still is being previewed: no black box, the page's white shows around it */
+.film__video.is-previewing {
+  background: transparent;
+}
+
+.film__video iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* Cover image with PLAY, shown in the player's place until clicked.
+   It fills exactly the same 3:2 box as the Vimeo player. */
+.film__cover {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: #fff; /* PLAY is always white, on top of the image */
+}
+
+.film__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.film__cover .film__cover-image {
+  transition: opacity 0.25s;
+}
+
+.is-previewing .film__cover-image {
+  opacity: 0;
+}
+
+/* Hover preview: all thumbnail images lie on top of the cover, invisible.
+   The hovered one quickly fades in (is-visible is set in FilmProject.jsx).
+   "contain" = the whole image, never cropped, as big as fits in the box
+   and centred — so a 3:2 or portrait still fills the height, with white
+   space left and right. */
+.film__cover .film__preview {
+  position: absolute;
+  inset: 0;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.film__cover .film__preview.is-visible {
+  opacity: 1;
+}
+
+/* PLAY in the centre, same style as VIEW on the Films slider */
+.film__cover .play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.25s; /* same quick fade as the images */
+}
+
+.film__cover:hover .play {
+  opacity: 0.6;
+}
+
+/* PLAY is hidden while a still is previewed, and comes back with the cover */
+.is-previewing .film__cover .play {
+  opacity: 0;
+}
+
+/* one row: as many equal columns as there are thumbnails */
+.film__thumbs {
+  display: grid;
+  grid-template-columns: repeat(var(--count), 1fr);
+  gap: var(--gap);
+  margin-top: var(--gap);
+}
+
+.film__thumb {
+  display: block;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--tile);
+}
+
+/* thumbnails are cut to the same 3:2 shape (the full-screen view shows the whole image) */
+.film__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.3s;
+}
+
+.film__thumb:hover img {
+  opacity: 0.8;
+}
+
+/* ---------------------------------------------------------------------
+   MASONRY GRID (Art Direction + film pages)
+   2 columns side by side (1 on phones), each a stack of items at their
+   own heights. Which item goes in which column is decided in Masonry.jsx.
+   --------------------------------------------------------------------- */
+.masonry {
+  --gap: 6px;
+  display: flex;
+  flex-direction: column; /* full-width items and rows of columns, stacked */
+  gap: var(--gap);
+  width: min(67vw, 100%); /* two thirds of the browser window, centered */
+  margin: 0 auto;
+}
+
+/* the columns, side by side (a full-width item sits between rows) */
+.masonry__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap);
+}
+
+.masonry__column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.masonry__item {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  background: var(--tile); /* light grey until the file has loaded */
+}
+
+.masonry__item img,
+.masonry__item video {
+  width: 100%;
+  height: 100%;
+  /* the box already has the file's exact shape; "contain" also makes sure
+     nothing is ever cut off, not even a pixel of rounding */
+  object-fit: contain;
+  display: block;
+}
+
+/* Grey box with a label, shown where a file is still missing */
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tile);
+  color: var(--dim);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+}
+
+/* ---------------------------------------------------------------------
+   FULL-SCREEN VIEWER (large image/video, covers everything incl. the top bar)
+   --------------------------------------------------------------------- */
+
+/* Always white with black text (CLOSE, arrows, counter), on every page
+   (Film pages and Art Direction), also when opened from the dark Films slider */
+.overlay {
+  --bg: #ffffff;
+  --fg: #0a0a0a;
+  --dim: rgba(10, 10, 10, 0.55);
+  color: var(--fg);
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 72px var(--pad);
+  animation: fade-in 0.3s ease;
+}
+
+.overlay__close {
+  position: absolute;
+  top: calc(var(--pad) + env(safe-area-inset-top, 0px));
+  right: var(--pad);
+  z-index: 3;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--fg);
+  transition: color 0.2s;
+}
+
+/* CLOSE and the arrows are black, and turn grey on hover */
+.overlay__close:hover,
+.overlay .arrow:hover {
+  color: var(--dim);
+}
+
+.overlay .arrow {
+  color: var(--fg);
+}
+
+.lightbox__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  animation: fade-in 0.4s ease;
+}
+
+.lightbox__media img,
+.lightbox__media video {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.lightbox__counter {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--pad) + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------------------------------------------------------------------
+   PHONES (screens narrower than 700px)
+   --------------------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .header {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+  }
+
+  .nav {
+    gap: 1.6em;
+  }
+
+  .clocks {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    gap: 8px;
+  }
+
+  .clocks__name {
+    display: none;
+  }
+
+  .clocks__short {
+    display: inline;
+  }
+
+  .arrow {
+    padding: 12px;
+  }
+
+  .arrow--prev {
+    left: calc(var(--pad) - 12px);
+  }
+
+  .arrow--next {
+    right: calc(var(--pad) - 12px);
+  }
+
+  /* Counter moves to the bottom-right so it doesn't overlap the title,
+     and VIEW stays just above it (lined up on the right; the 26px is VIEW's
+     invisible click padding on the right, minus a little letter spacing) */
+  .counter {
+    left: auto;
+    right: var(--pad);
+    transform: none;
+  }
+
+  .slide-actions {
+    left: auto;
+    right: calc(var(--pad) - 26px);
+    transform: none;
+  }
+
+  .slide-info {
+    max-width: calc(100% - 2 * var(--pad) - 60px);
+  }
+
+  .slide-info__title {
+    font-size: 14px;
+  }
+
+  .about-links {
+    font-size: 11px;
+  }
+
+  /* same size as the top bar on phones */
+  .project__close,
+  .film__heading {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+  }
+
+  /* Film pages on phones: full width, page scrolls, 3 thumbnails per row */
+  .film {
+    width: 100%;
+  }
+
+  .film__thumbs {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Masonry grid: almost full width, with small side margins */
+  .masonry {
+    width: 100%;
+  }
+}
+
+/* People who turned off animations in their system settings */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
