@@ -2,7 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { films } from '../content.js'
 import { hasFilmPage } from '../utils.js'
 import useSwipe from '../hooks/useSwipe.js'
+import useMediaQuery from '../hooks/useMediaQuery.js'
 import Chevron from '../components/Chevron.jsx'
+import CityClocks from '../components/CityClocks.jsx'
+import CursorLabel from '../components/CursorLabel.jsx'
 
 function Films({ navigate }) {
   // Start on the slide we came back to (e.g. from a film page), or the first one.
@@ -20,7 +23,13 @@ function Films({ navigate }) {
     window.history.replaceState({ ...window.history.state, film: index }, '')
   }, [index])
 
-  // VIEW opens the film's own page (video + thumbnails).
+  // Computers with a mouse: no visible VIEW; instead a small VIEW label
+  // follows the mouse while it's over the slide. Phones/tablets (touch):
+  // the VIEW text stays visible under the title.
+  const hasMouse = useMediaQuery('(hover: hover) and (pointer: fine)')
+  const [overSlide, setOverSlide] = useState(false)
+
+  // Clicking/tapping the slide (or VIEW) opens the film's own page.
   const openFilmPage = (event) => {
     event.preventDefault()
     navigate(`/films/${film.slug}`)
@@ -52,12 +61,18 @@ function Films({ navigate }) {
       {/* "key" makes the background restart (and fade in) on every slide change */}
       <Background key={index} film={film} />
 
+      {/* The whole slide is one big link to the film's page. It lies under the
+          arrows and the top bar, so those still work as before. */}
       {hasFilmPage(film) && (
-        <div className="slide-actions">
-          <a className="play" href={`/films/${film.slug}`} onClick={openFilmPage}>
-            VIEW
-          </a>
-        </div>
+        <a
+          className="slide-link"
+          href={`/films/${film.slug}`}
+          onClick={openFilmPage}
+          onMouseEnter={() => setOverSlide(true)}
+          onMouseLeave={() => setOverSlide(false)}
+          aria-label={`View ${film.title}`}
+          tabIndex={hasMouse ? undefined : -1} // on touch screens, VIEW is the keyboard stop instead
+        />
       )}
 
       {count > 1 && (
@@ -71,15 +86,33 @@ function Films({ navigate }) {
         </>
       )}
 
-      <div className="slide-info" key={`info-${index}`}>
-        {film.type && <p className="slide-info__type">{film.type}</p>}
-        <h2 className="slide-info__title">{film.title}</h2>
-        {film.description && <p className="slide-info__description">{film.description}</p>}
+      {/* Bottom-left corner, just above the clocks: category, title, and
+          VIEW + the counter on one line */}
+      <div className="slide-text">
+        <div className="slide-info" key={`info-${index}`}>
+          {film.type && <p className="slide-info__type">{film.type}</p>}
+          <h2 className="slide-info__title" data-text={film.title}>{film.title}</h2>
+          {film.description && <p className="slide-info__description">{film.description}</p>}
+        </div>
+
+        <div className="slide-actions">
+          {hasFilmPage(film) && !hasMouse && (
+            <a className="play" href={`/films/${film.slug}`} data-text="VIEW" onClick={openFilmPage}>
+              VIEW
+            </a>
+          )}
+
+          <p className="counter">
+            {index + 1} / {count}
+          </p>
+        </div>
       </div>
 
-      <p className="counter">
-        {index + 1} / {count}
-      </p>
+      {/* The city clocks, scrolling slowly along the bottom */}
+      <CityClocks />
+
+      {/* Computers with a mouse: "VIEW" next to the mouse while it's over the slide */}
+      {hasMouse && <CursorLabel visible={overSlide && hasFilmPage(film)}>VIEW</CursorLabel>}
     </main>
   )
 }

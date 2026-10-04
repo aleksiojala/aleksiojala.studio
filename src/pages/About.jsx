@@ -17,7 +17,7 @@ function About() {
       </div>
 
       {site.email && (
-        <a className="about-email" href={`mailto:${site.email}`}>
+        <a className="about-email" href={`mailto:${site.email}`} data-text={site.email}>
           {site.email}
         </a>
       )}
@@ -27,7 +27,7 @@ function About() {
           <li key={link.label}>
             {/* A link without an address yet is shown dimmed and isn't clickable. */}
             {link.href ? (
-              <a href={link.href} target="_blank" rel="noreferrer">
+              <a href={link.href} target="_blank" rel="noreferrer" data-text={link.label}>
                 {link.label}
               </a>
             ) : (

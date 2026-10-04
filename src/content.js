@@ -22,8 +22,9 @@ export const site = {
 
   // The bio on the ABOUT page: big centred text. Each line in quotes is
   // its own paragraph (with a small gap between them).
+  // \n inside the quotes = a line break at that exact spot.
   bio: [
-    'FILM & ART DIRECTOR WORKING ON GLOBAL TVC, MUSIC VIDEO & NARRATIVE PROJECTS.',
+    'FILM & ART DIRECTOR WORKING ON GLOBAL TVC,\nMUSIC VIDEO & NARRATIVE PROJECTS.',
     'BASED IN PARIS, FRANCE.',
   ],
 
@@ -34,17 +35,18 @@ export const site = {
   instagram: 'https://www.instagram.com/aleksi0jala/',
   linkedin: 'https://www.linkedin.com/in/aleksi-ojala-b8b438203',
 
-  // The row of city clocks along the top edge of every page.
-  //   name   shown on computers
-  //   short  shown on phones (narrow screens)
+  // The city clocks scrolling slowly along the bottom of the FILMS page,
+  // in this order. Each shows e.g. "PARIS 17:42:08" (summer time included).
+  //   name   the city name shown
   //   zone   the city's time zone (a list: en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-  // Delete all the lines (leave cities: []) to hide the row.
+  // Delete all the lines (leave cities: []) to hide the clocks.
   cities: [
-    { name: 'LOS ANGELES', short: 'LA', zone: 'America/Los_Angeles' },
-    { name: 'NEW YORK', short: 'NY', zone: 'America/New_York' },
-    { name: 'PARIS', short: 'PAR', zone: 'Europe/Paris' },
-    { name: 'HELSINKI', short: 'HEL', zone: 'Europe/Helsinki' },
-    { name: 'TOKYO', short: 'TYO', zone: 'Asia/Tokyo' },
+    { name: 'LOS ANGELES', zone: 'America/Los_Angeles' },
+    { name: 'NEW YORK', zone: 'America/New_York' },
+    { name: 'LONDON', zone: 'Europe/London' },
+    { name: 'PARIS', zone: 'Europe/Paris' },
+    { name: 'HELSINKI', zone: 'Europe/Helsinki' },
+    { name: 'SYDNEY', zone: 'Australia/Sydney' },
   ],
 }
 
@@ -163,13 +165,13 @@ export const artDirection = {
   //           file has loaded, so nothing jumps and the columns stay even.
   //           Files always keep their own shape anyway — never cropped.
   //   wide    optional: true = the item spans the FULL width of the grid
-  //           (both columns), e.g. for the most impressive piece. The items
-  //           after it continue in two columns below it.
+  //           (both columns). Not used at the moment: all items stay in
+  //           the 2 columns.
   //
   // Videos play silently on a loop, with no controls — in the grid AND when
   // clicked open full screen. They never play with sound.
   items: [
-    { type: 'video', src: '/art-direction/ad-video-05.mp4', ratio: '1920/824', wide: true }, // man in sunglasses — full width
+    { type: 'video', src: '/art-direction/ad-video-05.mp4', ratio: '1920/824' }, // man in sunglasses
     { type: 'image', src: '/art-direction/ad-nike-cowboy.jpg', alt: 'Nike cowboy', ratio: '2400/1345' },
     { type: 'video', src: '/art-direction/ad-video-07.mp4', ratio: '1920/1080' }, // Nike boot
     { type: 'video', src: '/art-direction/ad-video-03.mp4', ratio: '1920/1076' }, // football robot

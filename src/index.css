@@ -9,7 +9,25 @@
   --dim: rgba(242, 242, 242, 0.55);
   --tile: #141414; /* grey boxes where a file is still missing */
   --pad: clamp(16px, 3vw, 40px); /* space around the edges of the screen */
+  /* the top bar's distance from the top edge, and the Films clocks' distance
+     from the bottom edge: 12px less than --pad (but never under 10px) */
+  --edge: max(calc(var(--pad) - 12px), 10px);
   --font: 'Hanken Grotesk', 'Helvetica Neue', Arial, sans-serif;
+
+  /* TYPOGRAPHY — the ONLY 3 text sizes on the whole site. Change them here.
+     LARGE: About bio + film titles on the Films slides (grows with the window:
+            20px on phones up to 34px on big screens).
+     MEDIUM: name, nav, category, VIEW, PLAY, CLOSE, counters, film page
+            title, About links + email, Art Direction subtitle.
+     SMALL: the city clocks (and the grey "missing file" labels). */
+  --text-large: clamp(20px, 2.4vw, 34px);
+  --text-medium: 12px;
+  --text-small: 10px;
+
+  /* The 2 weights: all text is Thin; links and buttons turn Regular on hover.
+     (Both are loaded in index.html.) */
+  --weight-thin: 100;
+  --weight-regular: 400;
 }
 
 /* Light pages (Art Direction, About): white background, black text.
@@ -32,7 +50,7 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font);
-  font-weight: 300;
+  font-weight: var(--weight-thin);
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
 }
@@ -71,6 +89,31 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* HOVER on every link and button: the text turns from Thin to Regular
+   (only on computers with a mouse, so it doesn't get stuck on phones). */
+@media (hover: hover) {
+  a:hover,
+  button:hover {
+    font-weight: var(--weight-regular);
+  }
+}
+
+/* Regular text is a little wider than Thin. So that nothing shifts or jumps
+   on hover, every text link has an invisible Regular copy of its own text
+   (data-text="…" in the JSX), which keeps the box at the Regular width. */
+:where([data-text]) {
+  display: inline-block;
+}
+
+[data-text]::after {
+  content: attr(data-text);
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: var(--weight-regular);
+}
+
 .dim {
   color: var(--dim);
 }
@@ -90,48 +133,14 @@ button {
   align-items: baseline;
   flex-wrap: wrap;
   gap: 10px 24px;
-  padding: calc(var(--pad) + env(safe-area-inset-top, 0px)) var(--pad) var(--pad);
-  font-size: 12px;
+  padding: calc(var(--edge) + env(safe-area-inset-top, 0px)) var(--pad) var(--pad);
+  font-size: var(--text-medium);
   letter-spacing: 0.3em;
   text-transform: uppercase;
 }
 
-/* City clocks: a thin row along the very top edge, above the name and nav.
-   Pulled up to 12px from the top of the screen (the header's own top
-   padding is --pad), with --pad of space below it before the name row. */
-.clocks {
-  flex-basis: 100%;
-  display: flex;
-  justify-content: space-between; /* first city lines up with the name, last with the nav */
-  gap: 16px;
-  margin: calc(12px - var(--pad)) 0 calc(var(--pad) - 10px);
-  font-size: 10px;
-  line-height: 14px;
-  letter-spacing: 0.25em;
-}
-
-.clocks__city {
-  display: flex;
-  gap: 0.8em;
-  white-space: nowrap;
-}
-
-.clocks__time {
-  color: var(--dim);
-  font-variant-numeric: tabular-nums; /* digits all the same width, so nothing wiggles */
-}
-
-/* full names on computers, short codes (LA, NY…) on phones */
-.clocks__short {
-  display: none;
-}
-
 .header--solid {
   background: var(--bg);
-}
-
-.header__name {
-  font-weight: 400;
 }
 
 /* Grey line under the name (only on some pages, e.g. Art Direction).
@@ -139,7 +148,6 @@ button {
 .header__subtitle {
   order: 3;
   flex-basis: 100%;
-  font-weight: 400;
   color: var(--dim);
   margin-top: -4px;
 }
@@ -151,7 +159,15 @@ button {
 
 .nav a {
   color: var(--dim);
-  transition: color 0.2s;
+  transition: color 0.2s, font-weight 0.2s;
+}
+
+/* The last link (ABOUT) ends exactly at the page's right margin, like the
+   Art Direction grid below it: its text sits on the right of its box, and
+   the letter spacing after its last letter hangs outside the box. */
+.nav a:last-child {
+  text-align: right;
+  margin-right: -0.3em;
 }
 
 .nav a:hover,
@@ -175,40 +191,40 @@ button {
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: 12px;
+  font-size: var(--text-medium);
   letter-spacing: 0.3em;
   text-transform: uppercase;
 }
 
-/* The bio: a big, bold statement (like the old site). Grows with the
-   window: 20px on small screens up to 34px on big ones. */
+/* The bio: a big statement (like the old site), in the LARGE size. */
 .bio {
   max-width: 30em;
-  font-size: clamp(20px, 2.4vw, 34px);
-  font-weight: 400;
+  font-size: var(--text-large);
   line-height: 1.3;
   letter-spacing: 0.01em;
+}
+
+/* a \n in the bio text (content.js) starts a new line right there */
+.bio p {
+  white-space: pre-line;
 }
 
 .bio p + p {
   margin-top: 0.6em;
 }
 
-/* the email address under the bio: lowercase, underlined, clickable */
+/* the email address on its own line under the bio: the same LARGE text as
+   the bio (Thin, black), lowercase, no underline, clickable. The gap above
+   it is the same as between the bio paragraphs (0.6em). */
 .about-email {
-  margin-top: clamp(32px, 4vw, 56px);
-  font-size: clamp(15px, 1.5vw, 20px);
-  font-weight: 400;
+  margin-top: 0.6em;
+  font-size: var(--text-large);
+  line-height: 1.3;
   letter-spacing: 0.01em;
+  color: var(--fg);
   text-transform: none;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.35em;
-  transition: color 0.2s;
-}
-
-.about-email:hover {
-  color: var(--dim);
+  overflow-wrap: anywhere; /* never wider than a small phone screen */
+  transition: font-weight 0.2s;
 }
 
 .about-links {
@@ -226,8 +242,8 @@ button {
   color: var(--dim);
 }
 
-.about-links a:hover {
-  color: var(--dim);
+.about-links a {
+  transition: font-weight 0.2s;
 }
 
 /* ---------------------------------------------------------------------
@@ -238,7 +254,7 @@ button {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  font-size: 11px;
+  font-size: var(--text-medium);
   letter-spacing: 0.3em;
   text-transform: uppercase;
 }
@@ -258,7 +274,10 @@ button {
   display: block;
 }
 
-/* Darkens the top and bottom so the white text stays readable */
+/* Darkens the top a little (for the top bar), and the bottom third very
+   subtly: from transparent to about 40% black at the bottom edge, so the
+   project text and the clocks are readable on any image. The middle of
+   the image is left untouched. */
 .slide-bg::after {
   content: '';
   position: absolute;
@@ -267,8 +286,8 @@ button {
     to bottom,
     rgba(0, 0, 0, 0.45) 0%,
     rgba(0, 0, 0, 0) 25%,
-    rgba(0, 0, 0, 0) 55%,
-    rgba(0, 0, 0, 0.65) 100%
+    rgba(0, 0, 0, 0) 66%,
+    rgba(0, 0, 0, 0.4) 100%
   );
 }
 
@@ -276,29 +295,91 @@ button {
   background: radial-gradient(ellipse at center, #1c1c1c 0%, var(--bg) 70%);
 }
 
-/* VIEW, at the bottom centre, just above the counter (e.g. 2 / 3).
-   bottom = the counter's position + its height (16px) + a small gap (12px)
-   − VIEW's own invisible click padding below the text (1.2em = 14.4px). */
-.slide-actions {
+/* Bottom-left corner, above the clocks: category, title, and VIEW + the
+   counter on one line, left-aligned with the name. The middle of the image
+   stays free of text.
+   bottom = the clocks' position + their height (14px) + a 40px gap. */
+.slide-text {
   position: absolute;
-  bottom: calc(var(--pad) + env(safe-area-inset-bottom, 0px) + 16px + 12px - 14.4px);
-  left: 50%;
-  transform: translateX(-50%);
+  left: var(--pad); /* the same left edge as the name in the top bar */
+  right: var(--pad);
+  bottom: calc(var(--edge) + env(safe-area-inset-bottom, 0px) + 14px + 40px);
   z-index: 2;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  pointer-events: none;
+}
+
+/* The text lets the mouse through to the slide link underneath (so hovering
+   or clicking the title also opens the film). Only VIEW catches clicks. */
+.slide-text .play {
+  pointer-events: auto;
+}
+
+/* The whole slide is clickable (opens the film page). It lies under the
+   arrows, the text and the top bar. */
+.slide-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* keyboard focus: the outline goes just inside the screen edge */
+.slide-link:focus-visible {
+  outline-offset: -8px;
+}
+
+/* "VIEW" next to the mouse while it's over the slide (desktop only).
+   Moved by CursorLabel.jsx; the margin puts it just right of the pointer. */
+.cursor-label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  margin: 2px 0 0 20px;
+  font-size: var(--text-medium);
+  letter-spacing: 0.4em;
+  color: #fff;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  will-change: transform;
+}
+
+.cursor-label.is-visible {
+  opacity: 1;
 }
 
 .play {
   display: block;
   /* invisible padding = bigger area to click; extra left space balances the letter spacing */
   padding: 1.2em 2.2em 1.2em calc(2.2em + 0.4em);
-  font-size: 12px;
+  font-size: var(--text-medium);
   letter-spacing: 0.4em;
-  transition: opacity 0.2s;
+  text-align: center;
+  transition: font-weight 0.2s;
 }
 
-.play:hover {
-  opacity: 0.6;
+/* VIEW and the counter on one line, a small gap below the title */
+.slide-actions {
+  display: flex;
+  align-items: baseline;
+  gap: 2.5em; /* the space between VIEW and 1 / 3 (like the nav links) */
+  margin-top: 12px;
+  line-height: 16px;
+}
+
+/* VIEW on the slides: its invisible click padding is only above, below and
+   on the right (pulled back with negative margins, so it takes no space),
+   so the "V" lines up exactly with the name's left edge. */
+.slide-text .play {
+  color: #fff; /* pure white, a touch brighter than the counter */
+  padding: 1.2em 1.2em 1.2em 0;
+  margin: -1.2em -1.2em -1.2em 0;
+  text-align: left;
 }
 
 .arrow {
@@ -323,25 +404,49 @@ button {
   right: calc(var(--pad) - 16px);
 }
 
+/* The arrows on the Films slider: bigger, with a thicker line */
+.films .arrow svg {
+  width: 40px;
+  height: 40px;
+  display: block;
+}
+
+.films .arrow polyline {
+  stroke-width: 1.2; /* about 2px on screen */
+}
+
 .slide-info {
-  position: absolute;
-  left: var(--pad);
-  bottom: calc(var(--pad) + env(safe-area-inset-bottom, 0px));
-  z-index: 2;
-  max-width: min(440px, calc(100% - 2 * var(--pad) - 80px));
+  max-width: 900px;
   animation: fade-in 0.8s ease;
 }
 
 .slide-info__type {
-  color: var(--dim);
-  font-size: 10px;
+  color: rgba(255, 255, 255, 0.8); /* a bit brighter than the usual grey (--dim) */
   margin-bottom: 10px;
 }
 
+/* the film title, in the LARGE size — same spacing as the About bio */
 .slide-info__title {
-  font-size: 16px;
-  font-weight: 400;
-  letter-spacing: 0.3em;
+  display: block;
+  font-size: var(--text-large);
+  font-weight: inherit;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  transition: color 0.2s, font-weight 0.2s;
+}
+
+/* Hovering the slide: the title brightens and turns Regular, like a link
+   (its width is reserved by data-text, so nothing jumps) */
+@media (hover: hover) {
+  .slide-link:hover ~ .slide-text .slide-info__title {
+    color: #fff;
+    font-weight: var(--weight-regular);
+  }
+}
+
+.slide-link:focus-visible ~ .slide-text .slide-info__title {
+  color: #fff;
+  font-weight: var(--weight-regular);
 }
 
 .slide-info__description {
@@ -351,13 +456,61 @@ button {
   text-transform: none;
 }
 
+/* the counter (e.g. 1 / 3), on the same line as VIEW */
 .counter {
+  white-space: nowrap;
+}
+
+/* The city clocks along the bottom of the Films page, scrolling slowly to
+   the left like a ticker (the speed is set in CityClocks.jsx). */
+.clocks {
   position: absolute;
-  line-height: 16px;
-  left: 50%;
-  bottom: calc(var(--pad) + env(safe-area-inset-bottom, 0px));
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  bottom: calc(var(--edge) + env(safe-area-inset-bottom, 0px));
   z-index: 2;
+  overflow: hidden;
+  pointer-events: none; /* part of the image: hovering/clicking goes to the slide link */
+  font-size: var(--text-small);
+  line-height: 14px;
+  letter-spacing: 0.25em;
+}
+
+.clocks__track {
+  display: flex;
+  width: max-content;
+}
+
+/* slides left by one copy of the list, then starts over — endlessly */
+.clocks__track.is-moving {
+  animation: ticker var(--ticker-duration) linear infinite;
+  will-change: transform; /* moved by the graphics card: smooth, no jitter */
+}
+
+@keyframes ticker {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(calc(-1 * var(--ticker-shift)), 0, 0); }
+}
+
+.clocks__group {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.clocks__city {
+  display: flex;
+  gap: 0.8em;
+  padding-right: 4em; /* space between cities */
+  white-space: nowrap;
+}
+
+.clocks__time {
+  color: var(--dim);
+  font-variant-numeric: tabular-nums; /* digits all the same width, so nothing wiggles */
+  /* a fixed-width box for "17:42:08" (8 characters + their letter spacing),
+     so the row's width never changes when the time ticks */
+  display: inline-block;
+  width: calc(8 * (1ch + 0.25em));
   white-space: nowrap;
 }
 
@@ -391,19 +544,15 @@ button {
 
 .project__close {
   display: block;
-  font-size: 12px;
+  font-size: var(--text-medium);
   line-height: 16px;
   letter-spacing: 0.3em;
   color: var(--fg);
-  transition: color 0.2s;
+  transition: font-weight 0.2s;
 }
 
-.project__close:hover {
-  color: var(--dim);
-}
-
-/* Video + thumbnails. Width: 67% of the window like the Art Direction
-   grid, but smaller when needed so everything fits in the window height.
+/* Video + thumbnails. Width: 67% of the window (centred),
+   but smaller when needed so everything fits in the window height.
    --room = the height left over for the video and the thumbnail row:
    window height − top bar − CLOSE row (16px) − gap above the heading (16px)
    − heading row (16px + 10px gap) − gap above the thumbnails − bottom margin.
@@ -420,8 +569,8 @@ button {
 /* "ARTIST — TITLE" above the video, lined up with its left edge.
    Same size and spacing as the nav links (see .header), but black. */
 .film__heading {
-  font-size: 12px;
-  font-weight: 300;
+  font-size: var(--text-medium);
+  font-weight: inherit;
   line-height: 16px;
   letter-spacing: 0.3em;
   color: var(--fg);
@@ -496,11 +645,7 @@ button {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: opacity 0.25s; /* same quick fade as the images */
-}
-
-.film__cover:hover .play {
-  opacity: 0.6;
+  transition: opacity 0.25s, font-weight 0.2s; /* same quick fade as the images */
 }
 
 /* PLAY is hidden while a still is previewed, and comes back with the cover */
@@ -546,8 +691,9 @@ button {
   display: flex;
   flex-direction: column; /* full-width items and rows of columns, stacked */
   gap: var(--gap);
-  width: min(67vw, 100%); /* two thirds of the browser window, centered */
-  margin: 0 auto;
+  /* full width between the page's side margins (--pad, the same as the top
+     bar), so it lines up with the name on the left and ABOUT on the right */
+  width: 100%;
 }
 
 /* the columns, side by side (a full-width item sits between rows) */
@@ -592,7 +738,7 @@ button {
   justify-content: center;
   background: var(--tile);
   color: var(--dim);
-  font-size: 10px;
+  font-size: var(--text-small);
   letter-spacing: 0.3em;
 }
 
@@ -623,15 +769,15 @@ button {
   top: calc(var(--pad) + env(safe-area-inset-top, 0px));
   right: var(--pad);
   z-index: 3;
-  font-size: 12px;
+  font-size: var(--text-medium);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--fg);
-  transition: color 0.2s;
+  transition: font-weight 0.2s;
 }
 
-/* CLOSE and the arrows are black, and turn grey on hover */
-.overlay__close:hover,
+/* CLOSE is black and turns Regular on hover (like every link);
+   the arrows are black and turn grey on hover */
 .overlay .arrow:hover {
   color: var(--dim);
 }
@@ -646,7 +792,7 @@ button {
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: 11px;
+  font-size: var(--text-medium);
   letter-spacing: 0.3em;
   animation: fade-in 0.4s ease;
 }
@@ -664,7 +810,7 @@ button {
   left: 50%;
   bottom: calc(var(--pad) + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
-  font-size: 11px;
+  font-size: var(--text-medium);
   letter-spacing: 0.3em;
 }
 
@@ -679,26 +825,11 @@ button {
 
 @media (max-width: 700px) {
   .header {
-    font-size: 10px;
     letter-spacing: 0.25em;
   }
 
   .nav {
     gap: 1.6em;
-  }
-
-  .clocks {
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    gap: 8px;
-  }
-
-  .clocks__name {
-    display: none;
-  }
-
-  .clocks__short {
-    display: inline;
   }
 
   .arrow {
@@ -713,37 +844,15 @@ button {
     right: calc(var(--pad) - 12px);
   }
 
-  /* Counter moves to the bottom-right so it doesn't overlap the title,
-     and VIEW stays just above it (lined up on the right; the 26px is VIEW's
-     invisible click padding on the right, minus a little letter spacing) */
-  .counter {
-    left: auto;
-    right: var(--pad);
-    transform: none;
+  /* slightly smaller slider arrows, and less side space beside the title */
+  .films .arrow svg {
+    width: 32px;
+    height: 32px;
   }
 
-  .slide-actions {
-    left: auto;
-    right: calc(var(--pad) - 26px);
-    transform: none;
-  }
-
-  .slide-info {
-    max-width: calc(100% - 2 * var(--pad) - 60px);
-  }
-
-  .slide-info__title {
-    font-size: 14px;
-  }
-
-  .about-links {
-    font-size: 11px;
-  }
-
-  /* same size as the top bar on phones */
+  /* same letter spacing as the top bar on phones */
   .project__close,
   .film__heading {
-    font-size: 10px;
     letter-spacing: 0.25em;
   }
 
@@ -756,9 +865,8 @@ button {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  /* Masonry grid: almost full width, with small side margins */
-  .masonry {
-    width: 100%;
+  .nav a:last-child {
+    margin-right: -0.25em; /* the top bar's letter spacing on phones */
   }
 }
 

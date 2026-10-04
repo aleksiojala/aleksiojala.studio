@@ -1,6 +1,5 @@
 import { useLayoutEffect, useRef } from 'react'
 import { site } from '../content.js'
-import CityClocks from './CityClocks.jsx'
 
 // isActive: when the link is shown as the current page.
 // FILMS is also active on the film project pages (/films/…).
@@ -35,8 +34,7 @@ function Header({ path, navigate, subtitle, overVideo }) {
   // that scroll, it gets a solid background so text doesn't run underneath it.
   return (
     <header ref={headerRef} className={overVideo ? 'header' : 'header header--solid'}>
-      <CityClocks />
-      <a className="header__name" href="/" onClick={(e) => handleClick(e, '/')}>
+      <a className="header__name" href="/" data-text={site.name} onClick={(e) => handleClick(e, '/')}>
         {site.name}
       </a>
       <nav className="nav">
@@ -44,6 +42,7 @@ function Header({ path, navigate, subtitle, overVideo }) {
           <a
             key={link.to}
             href={link.to}
+            data-text={link.label}
             className={link.isActive(path) ? 'is-active' : undefined}
             onClick={(e) => handleClick(e, link.to)}
           >

@@ -36,7 +36,7 @@ function FilmProject({ film, filmIndex, navigate }) {
   return (
     <main className="page project">
       <div className="project__bar">
-        <a className="project__close" href="/" onClick={close}>
+        <a className="project__close" href="/" data-text="CLOSE" onClick={close}>
           CLOSE
         </a>
       </div>
@@ -111,7 +111,7 @@ function FilmVideo({ film, images, preview }) {
               className={`film__preview${image.src === preview ? ' is-visible' : ''}`}
             />
           ))}
-          <span className="play">PLAY</span>
+          <span className="play" data-text="PLAY">PLAY</span>
         </button>
       )}
     </div>

@@ -29,7 +29,7 @@ function Lightbox({ items, index, onIndexChange, onClose }) {
   // the top bar (otherwise CLOSE could end up overlapping the nav links).
   return createPortal(
     <div className="overlay" role="dialog" aria-modal="true" {...swipe}>
-      <button className="overlay__close" onClick={onClose}>
+      <button className="overlay__close" data-text="CLOSE" onClick={onClose}>
         CLOSE
       </button>
 
