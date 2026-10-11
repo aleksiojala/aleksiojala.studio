@@ -10,7 +10,7 @@ import About from './pages/About.jsx'
 // Each web address (path) shows one page.
 // theme: 'dark' = black background, white text. 'light' = white background, black text.
 // (The colours themselves are set at the top of index.css.)
-// subtitle: optional grey line under the name in the top bar.
+// subtitle: optional line under the name in the top bar.
 // overVideo: the top bar floats see-through on top of the page (Films slider).
 const PAGES = {
   '/': { component: Films, title: '', theme: 'dark', overVideo: true },

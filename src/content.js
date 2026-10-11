@@ -24,8 +24,8 @@ export const site = {
   // its own paragraph (with a small gap between them).
   // \n inside the quotes = a line break at that exact spot.
   bio: [
-    'FILM & ART DIRECTOR WORKING ON GLOBAL TVC,\nMUSIC VIDEO & NARRATIVE PROJECTS.',
-    'BASED IN PARIS, FRANCE.',
+    'Film & art director working on global TVC,\nmusic video & narrative projects.',
+    'Based in Paris, France.',
   ],
 
   // Just the address, without "mailto:".
@@ -147,7 +147,7 @@ export const films = [
 //  ART DIRECTION page (scrolls down from top to bottom)
 // ---------------------------------------------------------------------
 export const artDirection = {
-  // Grey subtitle shown under your name (top-left) on this page. Keep it short.
+  // Subtitle shown under your name (top-left) on this page. Keep it short.
   subtitle: 'AI IMAGERY, CONCEPT ART AND VISUAL DEVELOPMENT.',
 
   // THE GRID — images and videos mixed, shown in this order.

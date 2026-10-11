@@ -19,13 +19,16 @@ Colours: only FILMS is dark (white text on top of the videos). ART DIRECTION and
 - Letter spacing goes with the size: LARGE tight (0.01em), MEDIUM wide (0.3em; VIEW/PLAY 0.4em), SMALL wide (0.25em). On phones the top bar/CLOSE/film title use 0.25em so everything fits.
 - Font: Hanken Grotesk (Google Fonts, loaded in index.html as the range 100..400, so both Thin and Regular are there).
 - Weights (`--weight-thin` 100, `--weight-regular` 400): ALL text is Thin by default. No other weights.
-- Hover on every link and button (computers with a mouse only): the text turns from Thin to Regular (and the grey nav links also get brighter). No dimming/opacity hover effects on text.
+- Hover on every link and button (computers with a mouse only): the text turns from Thin to Regular. No colour, dimming or opacity hover effects on text.
+- FILMS front page exception: the name and ALL nav links are 100% white (#fff, no grey, no transparency); hover only changes Thin → Regular. Code: `.header--over-video` in index.css (Header.jsx adds it when `overVideo` is set).
+- White pages (ART DIRECTION, ABOUT, film pages): the name, ALL nav links and the Art Direction subtitle are 100% black (#000, no grey, no transparency); hover only changes Thin → Regular. Code: `:root[data-theme='light'] …` rules in index.css.
+- So the nav does NOT mark the current page (no colour, weight or underline difference) on any page.
 - No jumping on hover: every text link/button has `data-text="<its text>"` in the JSX; CSS ([data-text]::after) adds an invisible Regular copy that reserves the Regular width. Add `data-text` to every new text link/button.
 
 ## FILMS
 Full-screen slider, one project per slide:
 - Background: looping video filling the whole screen. Until there's a video, a still image: each film's own `slide` image in src/content.js (Ready To Die: rtd-slide.jpg). The slide image is separate from the film page's stills, so changing the stills never changes the front page.
-- Top of the screen: only the name (left) and the nav (right) — no clocks up there. The top bar sits 12px closer to the top edge than the side margin (`--edge` in index.css = --pad − 12px, never under 10px). This applies to the top bar on every page, so the name doesn't jump when changing pages.
+- Top of the screen: only the name (left) and the nav (right), both pure white — no clocks up there. The top bar sits 12px closer to the top edge than the side margin (`--edge` in index.css = --pad − 12px, never under 10px). This applies to the top bar on every page, so the name doesn't jump when changing pages.
 - Bottom-left corner, above the clocks (40px gap), left-aligned, same on phones. Its left edge lines up exactly with the left edge of the name "ALEKSI OJALA" (both at --pad). Stacked:
   - the category (MEDIUM, e.g. "MUSIC VIDEO"), white at 80% — a bit brighter than the usual grey, so it stands out from the background
   - the title (LARGE, e.g. "READY TO DIE")
@@ -34,9 +37,9 @@ Full-screen slider, one project per slide:
 - The centre of the image is completely free of text (only the left/right arrows at the sides).
 - Opening a film's page — the whole slide is clickable:
   - An invisible link (.slide-link) covers the whole slide, under the arrows and the top bar (those keep working). Clicking/tapping anywhere on the image — including on the title, the counter and the clocks, which let the mouse through — opens the film page. No STILLS link, no separate project page.
-  - Desktop (computers with a mouse, `(hover: hover) and (pointer: fine)`): NO visible VIEW text. Instead a small "VIEW" label (MEDIUM, white, Thin) follows the mouse smoothly, just right of the pointer, while it's over the image; hidden over the arrows, over the top bar, and when the mouse leaves the window. Code: src/components/CursorLabel.jsx (`EASE` = how softly it follows), styles .cursor-label.
+  - Desktop (computers with a mouse, `(hover: hover) and (pointer: fine)`): NO VIEW text at all — no visible VIEW and no label following the mouse (that cursor label was removed on purpose; don't add it back). The title turning Regular on hover is the only signal.
   - Desktop hover on the image: the title brightens (pure white) and turns from Thin to Regular, like other links (width reserved with data-text, so nothing jumps). Same when the slide link gets keyboard focus (Tab).
-  - Phones/tablets (touch): no cursor label; the VIEW text stays visible under the title (see above), and the whole slide is tappable too. Swiping still changes slides.
+  - Phones/tablets (touch): the VIEW text stays visible under the title (see above), and the whole slide is tappable too. Swiping still changes slides.
 - Each slide shows ONLY the category and the title. NO credit list.
 - Left/right arrows at the middle of the left/right edges: big (40px, 32px on phones), with a thicker line (~2px). Only the slider's arrows; the full-screen viewer keeps its thin ones.
 - The city clocks scroll along the bottom (see "City clocks" below).
@@ -51,30 +54,30 @@ Future: my short film — will have a description paragraph like the reference s
 ### Film pages (e.g. /films/ready-to-die) — opened with VIEW
 - One page per film, own address /films/<slug>.
 - White background, black text. The top bar (name + nav) and CLOSE are black too.
-- "CLOSE" on its own row just below the top bar, on the right (never overlapping the nav). Returns to the Films slider, on that film's slide.
 - Heading above the video: "ARTIST — TITLE" (e.g. "SALOMON FAYE — READY TO DIE"), lined up with the video's left edge. Same font, size (MEDIUM) and letter spacing as the nav links, black. No artist → just the title.
+- "CLOSE" mirrors the heading: on the same line (same height), right-aligned with the right edge of the video box (its trailing letter spacing hangs outside, so the E ends exactly at the edge). Returns to the Films slider, on that film's slide. Code: .film__top in index.css.
 - Desktop: everything fits on ONE screen, no scrolling (heading included):
   - Top: the video box, 3:2 (the same shape as the cover and the stills, so nothing jumps when hovering), centered, 67% of the window wide — automatically smaller when the window is short, so it all fits.
   - Below: ONE row of small thumbnails, side by side, same total width as the video, ~6px gaps. Thumbnails are cropped to the same 3:2 shape.
 - Optional cover image (`cover`): if a film has one, it's shown in place of the Vimeo player, filling exactly the same 3:2 box, with a small white "PLAY" text in the centre (same style as VIEW, no box; turns Regular when hovering the cover). Clicking it removes the cover, loads the Vimeo player in the same spot and starts it playing. The Vimeo player is only loaded after the click (faster page). No cover → the Vimeo player is shown straight away.
 - The box stays 3:2 when the video plays; a video of another shape fits inside it (Vimeo adds black bands). Vimeo shapes: Ready To Die 3:2 and Garbadura 3:2 (fill the box exactly), Gem Vintage 16:9 (bands above and below).
-- Hover preview (desktop/mouse only): hovering a thumbnail shows that image in the big video box in place of the cover, with a quick fade. The still keeps its own shape and is NEVER cropped: the whole image fits inside the 3:2 box area, centred (a 3:2 still fills the box exactly; a portrait still fills the full height; a still wider than 3:2 fills the width). While a still is shown, the cover and the box's black background are hidden, so the empty space around the still is the page's white. Works for any image shape. "PLAY" fades out too while a still is shown, and comes back with the cover. Leaving the thumbnail row brings the cover back. Once the video is playing, hovering does nothing. Clicking a thumbnail still opens it full screen. On mobile: no preview, tap opens full screen.
+- NO hover preview: hovering a thumbnail never changes the big box — it always shows the cover (with PLAY) or the video. Clicking/tapping a thumbnail opens it full screen. (A hover preview existed before and was removed on purpose — don't add it back.)
 - Mobile: scrolling allowed — video on top, thumbnails below in a grid of 3 per row.
 - Clicking a thumbnail opens it full screen (white full-screen viewer, whole image uncropped, arrows + close + counter — see "Full-screen viewer" below).
 - A film with no images yet: the page shows just the video.
 - Content per film in src/content.js: `slug`, `artist` (optional, '' = none), `vimeoId`, `slide` (front-page slider image), `cover` (optional, '' = none), `images` list. The title image is part of `images` (order = order in the row). Ready To Die: rtd-title.png first, then rtd-still-01.jpg … rtd-still-05.jpg.
 - Files go in public/films/<slug>/ — ideally 3:2 (e.g. 2400×1600), JPG for stills, max 2400px long side, ideally under ~500KB each. Cover image: 3:2 (e.g. 2400×1600), JPG, ideally under ~500KB — Ready To Die: rtd-cover.jpg. Slider image: Ready To Die: rtd-slide.jpg.
-- Garbadura (public/films/garbadura/): garbadura-slide.jpg (front-page slider), garbadura-cover.jpg (3:2 cover — the logo image, same picture as the slide image but its own file, so each can be changed separately), garbadura-still-01.jpg (3:2) … garbadura-still-04.jpg (02–04 are 16:9, so in the hover preview they fill the box width with thin white bands above and below). No title image, no artist → heading is just "GARBADURA". The Ready To Die files are web-ready: don't convert or rename them.
+- Garbadura (public/films/garbadura/): garbadura-slide.jpg (front-page slider), garbadura-cover.jpg (3:2 cover — the logo image, same picture as the slide image but its own file, so each can be changed separately), garbadura-still-01.jpg (3:2) … garbadura-still-04.jpg (02–04 are 16:9). No title image, no artist → heading is just "GARBADURA". The Ready To Die files are web-ready: don't convert or rename them.
 - Works on Netlify thanks to the `/* /index.html 200` rule in public/_redirects.
 - The full-screen viewer is rendered straight into <body> (React portal) so it always covers the top bar.
 
 ## ART DIRECTION
 - White background with black text (same as ABOUT). The top bar is black on this page; on FILMS it stays white over the videos.
 - Scrolls normally (not a slider). No showreel, no section titles.
-- Subtitle: one short grey line ("AI IMAGERY, CONCEPT ART AND VISUAL DEVELOPMENT.") in the top bar, directly under the name, left-aligned with it. Same font, size (MEDIUM) and letter spacing as the name, grey like the inactive nav links. No other intro text on the page.
+- Subtitle: one short line ("AI IMAGERY, CONCEPT ART AND VISUAL DEVELOPMENT.") in the top bar, directly under the name, left-aligned with it. Same font, size (MEDIUM), letter spacing and colour (100% black, Thin) as the name. No other intro text on the page.
 - Layout: the grid starts right below the top bar, with only a small gap (no big empty space). ONE mixed masonry grid of images and videos (Pinterest style).
   - 2 columns on desktop, 1 on mobile. ~6px gap.
-  - Grid width = the full width between the page's side margins (--pad, the same margins as the top bar): its left edge lines up exactly with the left edge of the name "ALEKSI OJALA", its right edge with the right edge of the last nav link (ABOUT). (The last nav link's trailing letter spacing hangs outside its box — `.nav a:last-child` in index.css — so the text itself ends exactly at the margin.)
+  - Grid width = 67% of the browser window, centred, with empty white space left and right (`.art .masonry` in index.css).
   - On mobile: almost full width, with small side margins (16px) so the images aren't tiny.
   - Every item keeps its original shape (portrait, square, landscape) — never cropped.
   - No titles or text on top of the items.
@@ -89,11 +92,11 @@ Future: my short film — will have a description paragraph like the reference s
 
 ## ABOUT
 - White background with black text (same as ART DIRECTION). The top bar is black on this page.
-- A strong, bold statement (like the old site): big centred bio text in the LARGE size, Thin weight, tight letter spacing. Two paragraphs (the first with a line break right after "TVC," so its two lines are closer in length):
-  "FILM & ART DIRECTOR WORKING ON GLOBAL TVC, MUSIC VIDEO & NARRATIVE PROJECTS." / "BASED IN PARIS, FRANCE."
+- A strong, bold statement (like the old site): big centred bio text in the LARGE size, Thin weight, tight letter spacing. Normal sentence case — NOT all caps (shown exactly as written in content.js). Two paragraphs (the first with a line break right after "TVC," so its two lines are closer in length):
+  "Film & art director working on global TVC, music video & narrative projects." / "Based in Paris, France."
 - Under it, on its own line: the email address itself — same LARGE size as the bio, Thin, black, lowercase, NO underline, clickable mailto link, same hover as other links (Thin → Regular). The gap above it is the same as between the bio paragraphs (0.6em).
 - NO background video or image
-- Links underneath, small site style: INSTAGRAM — LINKEDIN (no EMAIL link — the address is shown above instead). A link with no address yet is shown grey and isn't clickable.
+- Links underneath, small site style: INSTAGRAM and LINKEDIN stacked one above the other, centred, no line between them (no EMAIL link — the address is shown above instead). A link with no address yet is shown grey and isn't clickable.
 - Content in src/content.js: `bio` (a list, one entry per paragraph; `\n` inside an entry = a line break at that spot), `email`, `instagram`, `linkedin`.
 
 ## Full-screen viewer (clicking a film page thumbnail)
@@ -107,6 +110,10 @@ Future: my short film — will have a description paragraph like the reference s
 - No jitter: the scrolling is a CSS transform animation (translate3d + will-change, moved by the graphics card) that is never restarted when the time updates each second. Each time sits in a fixed-width box (tabular numbers + `width` for 8 characters), so the row's width never changes; it's only re-measured on window resize / font load, and tiny (<0.5px) differences are ignored. Full city names on phones too (it scrolls, so no short codes needed). People who turned off animations in their system settings see it standing still.
 - Same font as the site, SMALL size (10px), widely spaced, uppercase, white over the video. City name in the text colour, time in grey. No borders/boxes.
 - Cities are set in src/content.js (`site.cities`: name, zone). `cities: []` hides the clocks. Code: src/components/CityClocks.jsx, styles: .clocks in index.css.
+
+## Scrollbar (whole site)
+- The scrollbar is hidden on every page (`html` rules near the top of index.css); scrolling itself works normally (trackpad, wheel, keyboard, touch).
+- Why: a scrollbar only appears on long pages (Art Direction) and makes the window narrower, which shifted the nav when switching pages. Hidden everywhere → the name and nav are in exactly the same spot on every page. Don't bring the scrollbar back.
 
 ## Focus outline (whole site)
 - The thin outline around a link/button is shown ONLY for keyboard (Tab) users, never after a mouse click — on every link and button (arrows, VIEW, PLAY, CLOSE, thumbnails, nav, name…).

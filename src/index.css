@@ -55,6 +55,18 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
+/* No visible scrollbar on any page (scrolling still works as normal).
+   A scrollbar only appears on long pages (e.g. Art Direction) and makes
+   the window a little narrower, which shifted the nav to the left when
+   switching pages. Without it, the top bar is in the same place everywhere. */
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -143,12 +155,11 @@ button {
   background: var(--bg);
 }
 
-/* Grey line under the name (only on some pages, e.g. Art Direction).
+/* Line under the name (only on some pages, e.g. Art Direction).
    It takes a full row of its own, so the nav stays next to the name. */
 .header__subtitle {
   order: 3;
   flex-basis: 100%;
-  color: var(--dim);
   margin-top: -4px;
 }
 
@@ -173,6 +184,22 @@ button {
 .nav a:hover,
 .nav a.is-active {
   color: var(--fg);
+}
+
+/* FILMS slider: the name and all nav links are pure white (no grey);
+   hovering only turns them from Thin to Regular */
+.header--over-video .header__name,
+.header--over-video .nav a {
+  color: #fff;
+}
+
+/* White pages (Art Direction, About, film pages): the name, all nav links
+   and the subtitle are pure black (no grey); hovering only turns them
+   from Thin to Regular */
+:root[data-theme='light'] .header__name,
+:root[data-theme='light'] .nav a,
+:root[data-theme='light'] .header__subtitle {
+  color: #000;
 }
 
 /* ---------------------------------------------------------------------
@@ -202,6 +229,7 @@ button {
   font-size: var(--text-large);
   line-height: 1.3;
   letter-spacing: 0.01em;
+  text-transform: none; /* normal sentence case, written as-is in content.js */
 }
 
 /* a \n in the bio text (content.js) starts a new line right there */
@@ -227,19 +255,13 @@ button {
   transition: font-weight 0.2s;
 }
 
+/* INSTAGRAM and LINKEDIN, one above the other */
 .about-links {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   margin-top: 48px;
-}
-
-/* the "—" between the links */
-.about-links li + li::before {
-  content: '—';
-  margin: 0 1.2em;
-  color: var(--dim);
 }
 
 .about-links a {
@@ -329,28 +351,6 @@ button {
 /* keyboard focus: the outline goes just inside the screen edge */
 .slide-link:focus-visible {
   outline-offset: -8px;
-}
-
-/* "VIEW" next to the mouse while it's over the slide (desktop only).
-   Moved by CursorLabel.jsx; the margin puts it just right of the pointer. */
-.cursor-label {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 5;
-  margin: 2px 0 0 20px;
-  font-size: var(--text-medium);
-  letter-spacing: 0.4em;
-  color: #fff;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-  will-change: transform;
-}
-
-.cursor-label.is-visible {
-  opacity: 1;
 }
 
 .play {
@@ -536,12 +536,6 @@ button {
   padding-bottom: var(--pad);
 }
 
-/* CLOSE sits on its own row just below the top bar, on the right */
-.project__bar {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .project__close {
   display: block;
   font-size: var(--text-medium);
@@ -549,21 +543,34 @@ button {
   letter-spacing: 0.3em;
   color: var(--fg);
   transition: font-weight 0.2s;
+  /* the letter spacing after the last E hangs outside, so the E itself
+     ends exactly at the video's right edge */
+  margin-right: -0.3em;
 }
 
 /* Video + thumbnails. Width: 67% of the window (centred),
    but smaller when needed so everything fits in the window height.
    --room = the height left over for the video and the thumbnail row:
-   window height − top bar − CLOSE row (16px) − gap above the heading (16px)
+   window height − top bar − gap above the heading (16px)
    − heading row (16px + 10px gap) − gap above the thumbnails − bottom margin.
    The video box is 2/3 as tall as it is wide (3:2), the thumbnail row
    --thumbs-height (set in FilmProject.jsx), so the widest that fits is
    --room ÷ (2/3 + --thumbs-height). */
 .film {
   --gap: 6px;
-  --room: calc(100dvh - var(--header-height, 120px) - 16px - 16px - 26px - var(--gap) - var(--pad));
+  --room: calc(100dvh - var(--header-height, 120px) - 16px - 26px - var(--gap) - var(--pad));
   width: min(67vw, 100%, calc(var(--room) / (0.6667 + var(--thumbs-height, 0))));
   margin: 16px auto 0;
+}
+
+/* The row above the video: the heading on the left, CLOSE on the right
+   (mirroring it, lined up with the video's right edge). */
+.film__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  margin-bottom: 10px;
 }
 
 /* "ARTIST — TITLE" above the video, lined up with its left edge.
@@ -574,7 +581,6 @@ button {
   line-height: 16px;
   letter-spacing: 0.3em;
   color: var(--fg);
-  margin-bottom: 10px;
 }
 
 .film__video {
@@ -582,12 +588,6 @@ button {
      when hovering. A video of another shape fits inside (Vimeo adds bands). */
   aspect-ratio: 3 / 2;
   background: #000;
-  transition: background-color 0.25s;
-}
-
-/* A still is being previewed: no black box, the page's white shows around it */
-.film__video.is-previewing {
-  background: transparent;
 }
 
 .film__video iframe {
@@ -614,43 +614,12 @@ button {
   display: block;
 }
 
-.film__cover .film__cover-image {
-  transition: opacity 0.25s;
-}
-
-.is-previewing .film__cover-image {
-  opacity: 0;
-}
-
-/* Hover preview: all thumbnail images lie on top of the cover, invisible.
-   The hovered one quickly fades in (is-visible is set in FilmProject.jsx).
-   "contain" = the whole image, never cropped, as big as fits in the box
-   and centred — so a 3:2 or portrait still fills the height, with white
-   space left and right. */
-.film__cover .film__preview {
-  position: absolute;
-  inset: 0;
-  object-fit: contain;
-  opacity: 0;
-  transition: opacity 0.25s;
-}
-
-.film__cover .film__preview.is-visible {
-  opacity: 1;
-}
-
 /* PLAY in the centre, same style as VIEW on the Films slider */
 .film__cover .play {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: opacity 0.25s, font-weight 0.2s; /* same quick fade as the images */
-}
-
-/* PLAY is hidden while a still is previewed, and comes back with the cover */
-.is-previewing .film__cover .play {
-  opacity: 0;
 }
 
 /* one row: as many equal columns as there are thumbnails */
@@ -691,9 +660,14 @@ button {
   display: flex;
   flex-direction: column; /* full-width items and rows of columns, stacked */
   gap: var(--gap);
-  /* full width between the page's side margins (--pad, the same as the top
-     bar), so it lines up with the name on the left and ABOUT on the right */
   width: 100%;
+}
+
+/* Art Direction: a narrower grid, 67% of the window wide, centred,
+   with white space on both sides (full width on phones) */
+.art .masonry {
+  width: min(67vw, 100%);
+  margin: 0 auto;
 }
 
 /* the columns, side by side (a full-width item sits between rows) */
@@ -854,6 +828,14 @@ button {
   .project__close,
   .film__heading {
     letter-spacing: 0.25em;
+  }
+
+  .project__close {
+    margin-right: -0.25em;
+  }
+
+  .art .masonry {
+    width: 100%;
   }
 
   /* Film pages on phones: full width, page scrolls, 3 thumbnails per row */

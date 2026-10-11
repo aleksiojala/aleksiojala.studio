@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
 import Lightbox from '../components/Lightbox.jsx'
-import useMediaQuery from '../hooks/useMediaQuery.js'
 
 // A film's own page (e.g. /films/ready-to-die), opened with VIEW:
 // a heading, the Vimeo film, and one row of small thumbnails below it.
@@ -13,11 +12,6 @@ function FilmProject({ film, filmIndex, navigate }) {
   // Which image is open in the full-screen viewer. null = closed.
   const [openIndex, setOpenIndex] = useState(null)
   const closeViewer = useCallback(() => setOpenIndex(null), [])
-
-  // Hover preview (computers only, not phones/tablets): the thumbnail the
-  // mouse is over is shown in the big video box. null = show the cover.
-  const canHover = useMediaQuery('(hover: hover) and (min-width: 701px)')
-  const [preview, setPreview] = useState(null)
 
   // Goes back to the Films slider, on this film's slide.
   const close = (event) => {
@@ -35,30 +29,29 @@ function FilmProject({ film, filmIndex, navigate }) {
 
   return (
     <main className="page project">
-      <div className="project__bar">
-        <a className="project__close" href="/" data-text="CLOSE" onClick={close}>
-          CLOSE
-        </a>
-      </div>
-
       <div className="film" style={layout}>
-        <h1 className="film__heading">
-          {film.artist ? `${film.artist} — ${film.title}` : film.title}
-        </h1>
+        {/* the heading on the left, CLOSE on the right, on the same line */}
+        <div className="film__top">
+          <h1 className="film__heading">
+            {film.artist ? `${film.artist} — ${film.title}` : film.title}
+          </h1>
+          <a className="project__close" href="/" data-text="CLOSE" onClick={close}>
+            CLOSE
+          </a>
+        </div>
 
         {/* "key" starts each film with its cover showing again */}
         {film.vimeoId && (
-          <FilmVideo key={film.slug} film={film} images={images} preview={canHover ? preview : null} />
+          <FilmVideo key={film.slug} film={film} />
         )}
 
         {images.length > 0 && (
-          <div className="film__thumbs" onMouseLeave={() => setPreview(null)}>
+          <div className="film__thumbs">
             {images.map((image, i) => (
               <button
                 key={image.src}
                 className="film__thumb"
                 onClick={() => setOpenIndex(i)}
-                onMouseEnter={() => setPreview(image.src)}
                 aria-label={`Open image ${i + 1}`}
               >
                 <img src={image.src} alt={image.alt} />
@@ -83,14 +76,11 @@ function FilmProject({ film, filmIndex, navigate }) {
 // The Vimeo film. If the film has a cover image, the cover (with PLAY)
 // is shown first, and the Vimeo player only loads once it's clicked —
 // so the page itself loads faster.
-// While the cover is showing, "preview" (a thumbnail being hovered) fades
-// in on top of it. Once the video plays, previews are no longer shown.
-function FilmVideo({ film, images, preview }) {
+function FilmVideo({ film }) {
   const [playing, setPlaying] = useState(!film.cover)
 
   return (
-    // while a still is previewed, the cover and the box's black background are hidden
-    <div className={`film__video${!playing && preview ? ' is-previewing' : ''}`}>
+    <div className="film__video">
       {playing ? (
         <iframe
           src={`https://player.vimeo.com/video/${film.vimeoId}?title=0&byline=0&portrait=0&dnt=1${film.cover ? '&autoplay=1' : ''}`}
@@ -100,17 +90,7 @@ function FilmVideo({ film, images, preview }) {
         />
       ) : (
         <button className="film__cover" onClick={() => setPlaying(true)} aria-label={`Play ${film.title}`}>
-          <img className="film__cover-image" src={film.cover} alt="" />
-          {/* every thumbnail image, stacked and invisible; the hovered one fades in,
-              whole and uncropped, whatever its shape */}
-          {images.map((image) => (
-            <img
-              key={image.src}
-              src={image.src}
-              alt=""
-              className={`film__preview${image.src === preview ? ' is-visible' : ''}`}
-            />
-          ))}
+          <img src={film.cover} alt="" />
           <span className="play" data-text="PLAY">PLAY</span>
         </button>
       )}

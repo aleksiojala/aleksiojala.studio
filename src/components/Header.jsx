@@ -33,7 +33,7 @@ function Header({ path, navigate, subtitle, overVideo }) {
   // On the Films slider the bar floats see-through over the video. On pages
   // that scroll, it gets a solid background so text doesn't run underneath it.
   return (
-    <header ref={headerRef} className={overVideo ? 'header' : 'header header--solid'}>
+    <header ref={headerRef} className={overVideo ? 'header header--over-video' : 'header header--solid'}>
       <a className="header__name" href="/" data-text={site.name} onClick={(e) => handleClick(e, '/')}>
         {site.name}
       </a>
