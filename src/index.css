@@ -232,11 +232,6 @@ button {
   text-transform: none; /* normal sentence case, written as-is in content.js */
 }
 
-/* a \n in the bio text (content.js) starts a new line right there */
-.bio p {
-  white-space: pre-line;
-}
-
 .bio p + p {
   margin-top: 0.6em;
 }
@@ -266,6 +261,12 @@ button {
 
 .about-links a {
   transition: font-weight 0.2s;
+}
+
+/* lets About.jsx nudge each link onto a whole screen pixel (phones only) */
+.about-links a,
+.about-links span {
+  position: relative;
 }
 
 /* ---------------------------------------------------------------------
@@ -836,6 +837,12 @@ button {
 
   .art .masonry {
     width: 100%;
+  }
+
+  /* About: the forced line break in the bio (after "TVC,") is desktop only;
+     on phones the text wraps naturally */
+  .bio__break {
+    display: none;
   }
 
   /* Film pages on phones: full width, page scrolls, 3 thumbnails per row */

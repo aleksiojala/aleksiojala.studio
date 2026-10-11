@@ -92,12 +92,13 @@ Future: my short film — will have a description paragraph like the reference s
 
 ## ABOUT
 - White background with black text (same as ART DIRECTION). The top bar is black on this page.
-- A strong, bold statement (like the old site): big centred bio text in the LARGE size, Thin weight, tight letter spacing. Normal sentence case — NOT all caps (shown exactly as written in content.js). Two paragraphs (the first with a line break right after "TVC," so its two lines are closer in length):
+- A strong, bold statement (like the old site): big centred bio text in the LARGE size, Thin weight, tight letter spacing. Normal sentence case — NOT all caps (shown exactly as written in content.js). Two paragraphs (the first with a line break right after "TVC," so its two lines are closer in length — DESKTOP ONLY; on phones (≤700px) that break is switched off and the text wraps naturally, so "TVC," never ends up alone on a line):
   "Film & art director working on global TVC, music video & narrative projects." / "Based in Paris, France."
 - Under it, on its own line: the email address itself — same LARGE size as the bio, Thin, black, lowercase, NO underline, clickable mailto link, same hover as other links (Thin → Regular). The gap above it is the same as between the bio paragraphs (0.6em).
 - NO background video or image
 - Links underneath, small site style: INSTAGRAM and LINKEDIN stacked one above the other, centred, no line between them (no EMAIL link — the address is shown above instead). A link with no address yet is shown grey and isn't clickable.
-- Content in src/content.js: `bio` (a list, one entry per paragraph; `\n` inside an entry = a line break at that spot), `email`, `instagram`, `linkedin`.
+- Content in src/content.js: `bio` (a list, one entry per paragraph; `\n` inside an entry = a line break at that spot on desktop only — About.jsx turns it into `<br class="bio__break">`, hidden on phones), `email`, `instagram`, `linkedin`.
+- Phones: the centred INSTAGRAM / LINKEDIN links are nudged (less than half a pixel, in About.jsx) so their text starts exactly on a screen pixel. Why: Thin 12px letters are a hairline thick; when centring puts a letter between two pixels, its upright stroke is smeared over two pale pixel columns and looks broken (this made the "L" of LINKEDIN look cut off). Not done on desktop.
 
 ## Full-screen viewer (clicking a film page thumbnail)
 - src/components/Lightbox.jsx. Used only on the film pages (ART DIRECTION has no full-screen view). If a video is ever shown in it: muted, loop, no controls — never with sound.
