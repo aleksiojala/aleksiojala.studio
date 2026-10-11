@@ -835,6 +835,16 @@ button {
     margin-right: -0.25em;
   }
 
+  /* Art Direction subtitle on phones: the same visible gap above it (from
+     the nav) as between the name and the nav, more room between its two
+     lines, and more below it (so the grid starts a little lower). The name
+     and nav don't move, so they stay put between pages. */
+  .header__subtitle {
+    margin-top: -2px;
+    margin-bottom: 8px;
+    line-height: 1.7;
+  }
+
   .art .masonry {
     width: 100%;
   }
@@ -843,6 +853,14 @@ button {
      on phones the text wraps naturally */
   .bio__break {
     display: none;
+  }
+
+  /* About links: each one is drawn on its own layer. Without this, iPhones
+     (Safari's engine) cut a thin strip off the left of the L in LINKEDIN,
+     so it looked pale — a browser drawing bug, found by testing on a phone. */
+  .about-links a,
+  .about-links span {
+    transform: translateZ(0);
   }
 
   /* Film pages on phones: full width, page scrolls, 3 thumbnails per row */

@@ -75,6 +75,7 @@ Future: my short film — will have a description paragraph like the reference s
 - White background with black text (same as ABOUT). The top bar is black on this page; on FILMS it stays white over the videos.
 - Scrolls normally (not a slider). No showreel, no section titles.
 - Subtitle: one short line ("AI IMAGERY, CONCEPT ART AND VISUAL DEVELOPMENT.") in the top bar, directly under the name, left-aligned with it. Same font, size (MEDIUM), letter spacing and colour (100% black, Thin) as the name. No other intro text on the page.
+  - Phones: the top bar wraps to 3 rows (name / nav / subtitle on 2 lines). The visible gap between the nav and the subtitle is the SAME as between the name and the nav (subtitle margin-top −2px on phones). The subtitle's two lines have line-height 1.7, and it has 8px extra below it (so the grid starts a little lower). Only the subtitle's spacing changes — the name and nav stay exactly where they are on every page.
 - Layout: the grid starts right below the top bar, with only a small gap (no big empty space). ONE mixed masonry grid of images and videos (Pinterest style).
   - 2 columns on desktop, 1 on mobile. ~6px gap.
   - Grid width = 67% of the browser window, centred, with empty white space left and right (`.art .masonry` in index.css).
@@ -98,7 +99,8 @@ Future: my short film — will have a description paragraph like the reference s
 - NO background video or image
 - Links underneath, small site style: INSTAGRAM and LINKEDIN stacked one above the other, centred, no line between them (no EMAIL link — the address is shown above instead). A link with no address yet is shown grey and isn't clickable.
 - Content in src/content.js: `bio` (a list, one entry per paragraph; `\n` inside an entry = a line break at that spot on desktop only — About.jsx turns it into `<br class="bio__break">`, hidden on phones), `email`, `instagram`, `linkedin`.
-- Phones: the centred INSTAGRAM / LINKEDIN links are nudged (less than half a pixel, in About.jsx) so their text starts exactly on a screen pixel. Why: Thin 12px letters are a hairline thick; when centring puts a letter between two pixels, its upright stroke is smeared over two pale pixel columns and looks broken (this made the "L" of LINKEDIN look cut off). Not done on desktop.
+- Phones: the centred INSTAGRAM / LINKEDIN links are nudged (less than half a pixel, in About.jsx) so their text starts exactly on a screen pixel. Why: Thin 12px letters are a hairline thick; when centring puts a letter between two pixels, its upright stroke is smeared over two pale pixel columns and looks broken (this made the "L" of LINKEDIN look cut off on low-resolution screens). Not done on desktop.
+- Phones: the About links also have `transform: translateZ(0)` (index.css, phone section), which draws each on its own layer. Why: iPhone WebKit cut a thin strip off the left of the L in LINKEDIN at its centred position, making the L look pale (a WebKit drawing bug, confirmed by test rows on a real iPhone: only the own-layer version drew it fully). Don't remove it.
 
 ## Full-screen viewer (clicking a film page thumbnail)
 - src/components/Lightbox.jsx. Used only on the film pages (ART DIRECTION has no full-screen view). If a video is ever shown in it: muted, loop, no controls — never with sound.
